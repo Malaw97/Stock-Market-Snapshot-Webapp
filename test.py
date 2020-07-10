@@ -1,10 +1,6 @@
-import pandas as pd
 from bs4 import BeautifulSoup
-import re
 from selenium import webdriver
 import chromedriver_binary
-import string
-pd.options.display.float_format = '{:.0f}'.format
 
 #State your designated ticker
 tickers=input("What ticker would you like to explore? (If entering more than one, separate each ticker by a comma)")
@@ -37,5 +33,5 @@ def main():
     for i in parse_input(tickers):
         l.append(return_data(i))
     return l
+
 print(main())
-#print(return_data('tsla'))
