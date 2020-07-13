@@ -2,9 +2,11 @@ from bs4 import BeautifulSoup
 import chromedriver_binary
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+#Initiate headless chrome option
 options = Options()
 options.add_argument('--headless')
-options.add_argument('--disable-gpu')  # Last I checked this was necessary.
+options.add_argument('--disable-gpu')
 
 
 #State your designated ticker
@@ -17,11 +19,11 @@ def parse_input(ticker_list):
         ticks.append(i.strip())
     return ticks
 
-def return_data(ticker):
+def retrieve_yahoo(ticker):
     '''
     Return data associated with a given ticker
     '''
-    #Open chromedriver.exe
+    #Locate chromedriver.exe locally
     webdrive=webdriver.Chrome(r'D:\Documents\Github\Scraper\chromedriver.exe', options=options)
     #Assign designated ticker to hyperlink
     webdrive.get('https://finance.yahoo.com/quote/'+ticker+'/financials?p='+ticker)
@@ -33,7 +35,7 @@ def return_data(ticker):
     features=[]
     r=(soup.find_all('div', class_='D(tbr)'))
     for i in r:
-        features.append(i.text)
+        features.append(i)
 
     data=[ticker.upper(), float((Price[0]).replace((','),(''))), DoD_Change[0], features]
     return data
@@ -41,7 +43,7 @@ def return_data(ticker):
 def main():
     l=[]
     for i in parse_input(tickers):
-        l.append(return_data(i))
+        l.append(retrieve_yahoo(i))
     return l
 
 print(main())
