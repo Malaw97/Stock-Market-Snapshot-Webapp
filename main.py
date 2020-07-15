@@ -17,7 +17,12 @@ def parse_input(tickers):
     ticker_list=[]
     tickers=tickers.split(',')
     for i in tickers:
-        ticker_list.append(i.strip())
+        i=i.strip()
+        if len(i)!=4:
+            print('Invalid Ticker Length')
+            sys.exit()
+        else:
+            ticker_list.append(i)
     return ticker_list
 
 def request_type(num):
@@ -53,8 +58,4 @@ def retrieve(ticker, request1):
 
 if __name__=="__main__":
     for i in (parse_input(user_input)):
-        if len(i)!=4:
-            print('Invalid Ticker Length')
-            sys.exit()
-        else:
-            print(retrieve(i, request_type(user_input2)))
+        print(retrieve(i, request_type(user_input2)))
