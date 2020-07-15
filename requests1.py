@@ -5,7 +5,7 @@ import pandas as pd
 import sys
 
 user_input = input("What ticker(s) would you like to explore (If entering more than one, separate each ticker by a comma)?\n ")
-user_input2 = input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-prices\n")
+user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-prices\n")).strip()
 
 # user_input='tsla, amzn, aapl'
 key= 'Tpk_fff49e874d4a452b8a9c636ff96b06bc'
@@ -24,7 +24,6 @@ def request_type(num):
     '''
     Map numbers to retrieval types
     '''
-    num=num.strip()
     if num=='1':
         return 'quote'
     elif num=='2':
@@ -43,13 +42,19 @@ def retrieve(ticker, request1):
 
     json_acceptable_string = url_data.replace("'", "\"")
     data = json.loads(json_acceptable_string)
-    return data
 
+    if user_input2=="1":
+        keys, values =list(data.keys()),list(data.values())
+        df=pd.DataFrame({'Keys': keys, 'Values': values})
+        return df
+
+    elif user_input2=="2":
+        return data
 
 if __name__=="__main__":
     for i in (parse_input(user_input)):
-        if len(i)==4:
-            print(retrieve(i, request_type(user_input2)))
-        else:
+        if len(i)!=4:
             print('Invalid Ticker Length')
             sys.exit()
+        else:
+            print(retrieve(i, request_type(user_input2)))
