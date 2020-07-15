@@ -2,23 +2,30 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
-r = requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
+# user_input = input("What ticker(s) would you like to explore (If entering more than one, separate each ticker by a comma)? ")
+user_input='tsla, amzn, aapl'
 
-soup = BeautifulSoup(r.text,'lxml')
+def parse_input(tickers):
+    ticker_list=[]
+    tickers=tickers.split(',')
+    for i in tickers:
+        ticker_list.append(i.strip())
+    return ticker_list
 
-g=soup.find_all('span',{'class':'Trsdu(0.3s)','class':'Fw(b)'})
-# for i in g:
-    # print(i.text)
+def retrieve(ticker):
+    '''
+    Return data associated with a given ticker
+    '''
+    key= 'Tpk_fff49e874d4a452b8a9c636ff96b06bc'
+    url=requests.get('https://sandbox.iexapis.com/stable/stock/' + ticker + '/quote?token=' + key)
 
-# ticker = input("What ticker(s) would you like to explore (If entering more than one, separate each ticker by a comma)? ")
-ticker='tsla'
-key= 'Tpk_fff49e874d4a452b8a9c636ff96b06bc'
-url=requests.get('https://sandbox.iexapis.com/stable/stock/' + ticker + '/quote?token=' + key)
+    soup = BeautifulSoup(url.text,'lxml')
+    url_data=(soup.find('body',{'style':''})).text
 
-soup = BeautifulSoup(url.text,'lxml')
-url_data=(soup.find('body',{'style':''})).text
+    json_acceptable_string = url_data.replace("'", "\"")
+    data = json.loads(json_acceptable_string)
+    return data
 
-json_acceptable_string = url_data.replace("'", "\"")
-print(json_acceptable_string)
-d = json.loads(json_acceptable_string)
-print(d)
+if __name__=="__main__":
+    for i in (parse_input(user_input)):
+        print(retrieve(i))
