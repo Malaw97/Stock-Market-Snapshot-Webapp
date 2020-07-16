@@ -3,11 +3,11 @@ from bs4 import BeautifulSoup
 import json
 import pandas as pd
 import sys
+from decouple import config
 
 user_input = input("What ticker(s) would you like to explore (If entering more than one, separate each ticker by a comma)?\n ")
 user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-prices\n")).strip()
-
-key= 'Tpk_fff49e874d4a452b8a9c636ff96b06bc'
+key=config('Test_Key_1')
 
 def parse_input(tickers):
     '''
