@@ -5,8 +5,12 @@ import pandas as pd
 import sys
 from decouple import config
 
-user_input = input("What ticker(s) would you like to explore (If entering more than one, separate each ticker by a comma)?\n ")
-user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-prices\n")).strip()
+def take_user_input():
+    '''
+
+    '''
+user_input = input("What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)?\n )
+user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
 key=config('Test_Key_1')
 
 def parse_input(tickers):
@@ -59,11 +63,14 @@ def format_data(json_data):
     #     df=pd.DataFrame({'Keys': keys, 'Values': values})
         df=pd.DataFrame(json_data,index=[1])
         return df
-
     elif user_input2=="2":
+        list_df=[]
         for i in json_data:
             df=pd.DataFrame(i,index=[0])
-            return df
+            list_df.append(df)
+        df=pd.concat(list_df)
+        df.reset_index(drop=True, inplace=True)
+        return df
 
 def package_retrieve(user_input, user_input2):
     '''
@@ -75,9 +82,18 @@ def package_retrieve(user_input, user_input2):
         json_data=(retrieve(i, request_type))
         data=format_data(json_data)
         list_df.append(data)
-    list_df=pd.concat(list_df)
-    list_df.reset_index(drop=True, inplace=True)
-    print(list_df)
+    if user_input2=='1':
+        list_df=pd.concat(list_df)
+        list_df.reset_index(drop=True, inplace=True)
+        return list_df
+    elif user_input2=='2':
+        return list_df
+
+def graph():
+    '''
+    Return visual representation of a dataframe
+    '''
 
 if __name__=="__main__":
-    package_retrieve(user_input, user_input2)
+    output=package_retrieve(user_input, user_input2)
+    print(output)
