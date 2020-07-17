@@ -9,7 +9,8 @@ def take_user_input():
     user_input = input("What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n ")
     user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
     api_key=config('Test_Key_1')
-    
+    user_inp = [user_input, user_input2, api_key]
+    return user_inp
 
 
 def parse_input(tickers):
@@ -53,7 +54,7 @@ def retrieve(ticker, request1, key):
     json_data = json.loads(json_acceptable_string)
     return json_data
 
-def format_data(json_data):
+def format_data(user_input2,json_data):
     '''
     Format json data into dataframes
     '''
@@ -71,15 +72,18 @@ def format_data(json_data):
         df.reset_index(drop=True, inplace=True)
         return df
 
-def package_retrieve(user_input, user_input2, key):
+def package_retrieve(user_inp):
     '''
     Package df based on user_input2 (Retrieval Type)
     '''
+    user_input=user_inp[0]
+    user_input2=user_inp[1]
+    key=user_inp[2]
     list_df=[]
     for i in (parse_input(user_input)):
         request_type=request_sort(user_input2)
         json_data=(retrieve(i, request_type, key))
-        data=format_data(json_data)
+        data=format_data(user_input2, json_data)
         list_df.append(data)
     if user_input2=='1':
         list_df=pd.concat(list_df)
