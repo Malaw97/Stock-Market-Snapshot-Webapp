@@ -76,9 +76,7 @@ def package_retrieve(user_inp):
     '''
     Package df based on user_input2 (Retrieval Type)
     '''
-    user_input=user_inp[0]
-    user_input2=user_inp[1]
-    key=user_inp[2]
+    user_input, user_input2, key=user_inp[0], user_inp[1], user_inp[2]
     list_df=[]
     for i in (parse_input(user_input)):
         request_type=request_sort(user_input2)
