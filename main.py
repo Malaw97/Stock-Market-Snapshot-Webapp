@@ -1,17 +1,16 @@
-import requests
+import requests, json, sys
 from bs4 import BeautifulSoup
-import json
 import pandas as pd
-import sys
 from decouple import config
 
 def take_user_input():
     '''
-
     '''
-user_input = input("What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)?\n )
-user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
-key=config('Test_Key_1')
+    user_input = input("What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n ")
+    user_input2 = (input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
+    api_key=config('Test_Key_1')
+    
+
 
 def parse_input(tickers):
     '''
@@ -42,7 +41,7 @@ def request_sort(num):
         print("Invalid Numeric Entry")
         sys.exit()
 
-def retrieve(ticker, request1):
+def retrieve(ticker, request1, key):
     '''
     Return json data associated with a given ticker
     '''
@@ -72,14 +71,14 @@ def format_data(json_data):
         df.reset_index(drop=True, inplace=True)
         return df
 
-def package_retrieve(user_input, user_input2):
+def package_retrieve(user_input, user_input2, key):
     '''
     Package df based on user_input2 (Retrieval Type)
     '''
     list_df=[]
     for i in (parse_input(user_input)):
         request_type=request_sort(user_input2)
-        json_data=(retrieve(i, request_type))
+        json_data=(retrieve(i, request_type, key))
         data=format_data(json_data)
         list_df.append(data)
     if user_input2=='1':
@@ -95,5 +94,5 @@ def graph():
     '''
 
 if __name__=="__main__":
-    output=package_retrieve(user_input, user_input2)
+    output=package_retrieve(take_user_input())
     print(output)
