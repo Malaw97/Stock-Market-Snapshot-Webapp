@@ -128,6 +128,6 @@ def graph():
 
 if __name__ == "__main__":
     output = package_retrieve(take_user_input())
-    output = package_retrieve(
-        ["tsla, amzn", "1", "Tpk_fff49e874d4a452b8a9c636ff96b06bc"])
+    # output = package_retrieve(
+    #     ["tsla, amzn", "1", "Tpk_fff49e874d4a452b8a9c636ff96b06bc"])
     print(output)
