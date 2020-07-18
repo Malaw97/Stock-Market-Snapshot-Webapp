@@ -1,8 +1,10 @@
 import requests
 import json
+import logging
 from bs4 import BeautifulSoup
 import pandas as pd
 from decouple import config
+logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
 
 def take_user_input():
@@ -12,13 +14,11 @@ def take_user_input():
     Extract api key from .env file
     '''
     user_input = input(
-        "What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n ")
+        "What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n")
     # Clean ticker input
     user_input = parse_input(user_input)
     user_input2 = (
         input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
-    # Check validity of retrieval type
-    assert user_input2.isdigit(), "Invalid entry"
     # Retrieve api key from .env file
     api_key = config('Test_Key_1')
     # Place inputs into a list
@@ -49,7 +49,13 @@ def request_sort(num):
     elif num == '3':
         return ''
     else:
-        assert False, "Invalid Numeric Entry"
+        try:
+            assert False, "Invalid Retrieval Type"
+        except AssertionError as error:
+            logging.error(
+                'Function: request_sort\n           Error: Invalid Retrieval Request\n           Retrieval Type requested=' +
+                num)
+            raise
 
 
 def retrieve(ticker, request1, key):
@@ -69,7 +75,13 @@ def retrieve(ticker, request1, key):
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
     # Check validity of ticker
-    assert url_data != 'Unknown symbol', 'Invalid Ticker'
+    try:
+        assert url_data != 'Unknown symbol', 'Invalid Ticker Request'
+    except AssertionError as error:
+        logging.error(
+            'Function: retrieve\n           Error: Invalid Ticker Request\n           Ticker Requested=' +
+            ticker)
+        raise
     # Transform into json data
     json_acceptable_string = url_data.replace("'", "\"")
     # Turn into python object
