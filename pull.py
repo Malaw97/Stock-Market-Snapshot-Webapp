@@ -105,7 +105,7 @@ def package_retrieve(user_inp):
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
     list_df = []
     for i in (parse_input(user_input)):
-        # Return list of dataframes
+        # Produce list of dataframes
         request_type = request_sort(user_input2)
         json_data = (retrieve(i, request_type, key))
         data = format_data(user_input2, json_data)
@@ -116,7 +116,7 @@ def package_retrieve(user_inp):
         list_df.reset_index(drop=True, inplace=True)
         return list_df
     elif user_input2 == '2':
-        # Passthrough the list of dataframes
+        # Return the list of dataframes
         return list_df
 
 
