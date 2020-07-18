@@ -22,7 +22,6 @@ def take_user_input():
     user_input = parse_input(user_input)
     user_input2 = (
         input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
-    # Retrieve api key from .env file
     # Place inputs into a list
     user_inp = [user_input, user_input2]
     return user_inp
@@ -122,9 +121,10 @@ def package_retrieve(user_inp):
     MAIN FUNCTION
     Package df based on user_input2 (Retrieval Type)
     Sample inputs:
-        package_retrieve([['tsla','amzn', 'goog', 'aapl'], '1'])
-        package_retrieve(take_user_input())
+    FOR TESTING: package_retrieve(take_user_input())
+    PRODUCTION: package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
     '''
+    # Retrieve api key from .env file
     user_inp.append(config('Test_Key_1'))
     # Assign list of inputs to variables, and clean ticker input
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
@@ -149,6 +149,6 @@ def package_retrieve(user_inp):
 if __name__ == "__main__":
     t1 = time.time()
     # output = package_retrieve(take_user_input())
-    output = package_retrieve([['tsla'], '1'])
+    output = package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
