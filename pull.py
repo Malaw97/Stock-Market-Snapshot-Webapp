@@ -7,14 +7,17 @@ from decouple import config
 
 def take_user_input():
     '''
-    Take 2 inputs from user, cleaning and verifying them
+    Take 2 inputs from user, cleaning and verifying retrieval type validity
+    Raise assertion error if retrieval type is invalid
     Extract api key from .env file
     '''
     user_input = input(
         "What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n ")
+    # Clean ticker input
     user_input = parse_input(user_input)
     user_input2 = (
         input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
+    # Check validity of retrieval type
     assert user_input2.isdigit(), "Invalid entry"
     # Retrieve api key from .env file
     api_key = config('Test_Key_1')
@@ -31,7 +34,6 @@ def parse_input(tickers):
     tickers = tickers.split(',')
     for i in tickers:
         i = i.strip()
-        assert len(i) == 4, 'Invalid Ticker Length'
         ticker_list.append(i)
     return ticker_list
 
@@ -53,6 +55,7 @@ def request_sort(num):
 def retrieve(ticker, request1, key):
     '''
     Return dictionary interpretation of json data associated with a given ticker
+    Raise assertion error if ticker is invalid
     '''
     # Connect to and process a url's html data
     url = requests.get(
@@ -65,6 +68,7 @@ def retrieve(ticker, request1, key):
     soup = BeautifulSoup(url.text, 'lxml')
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
+    assert url_data!='Unknown symbol', 'Invalid Ticker'
     # Transform into json data
     json_acceptable_string = url_data.replace("'", "\"")
     # Turn into python object
@@ -97,7 +101,9 @@ def format_data(user_input2, json_data):
 
 def package_retrieve(user_inp):
     '''
+    This is the main function
     Package df based on user_input2 (Retrieval Type)
+    Sample input: package_retrieve(["tsla, amzn", "1", "Tpk_fff49e874d4a452b8a9c636ff96b06bc"])
     '''
     # Assign list of inputs to variables
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
@@ -120,6 +126,4 @@ def package_retrieve(user_inp):
 
 if __name__ == "__main__":
     output = package_retrieve(take_user_input())
-    # output = package_retrieve(
-    #     ["tsla, amzn", "1", "Tpk_fff49e874d4a452b8a9c636ff96b06bc"])
     print(output)
