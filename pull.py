@@ -68,6 +68,7 @@ def retrieve(ticker, request1, key):
     soup = BeautifulSoup(url.text, 'lxml')
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
+    # Check validity of ticker
     assert url_data!='Unknown symbol', 'Invalid Ticker'
     # Transform into json data
     json_acceptable_string = url_data.replace("'", "\"")
