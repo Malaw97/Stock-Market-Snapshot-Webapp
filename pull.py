@@ -1,6 +1,7 @@
 import requests
 import json
 import logging
+import time
 from bs4 import BeautifulSoup
 import pandas as pd
 from decouple import config
@@ -9,25 +10,29 @@ logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
 def take_user_input():
     '''
+    FOR TESTING PURPOSES
+
     Take 2 inputs from user, cleaning and verifying retrieval type validity
     Raise assertion error if retrieval type is invalid
     Extract api key from .env file
     '''
     user_input = input(
         "What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n")
-    # Clean ticker input
+    # Clean Ticker Input
     user_input = parse_input(user_input)
     user_input2 = (
         input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
     # Retrieve api key from .env file
-    api_key = config('Test_Key_1')
     # Place inputs into a list
-    user_inp = [user_input, user_input2, api_key]
+    user_inp = [user_input, user_input2]
     return user_inp
 
 
 def parse_input(tickers):
     '''
+    FOR TESTING PURPOSES
+
+    Validates take_user_input()
     Clean input, returning a readable list
     '''
     ticker_list = []
@@ -114,13 +119,17 @@ def format_data(user_input2, json_data):
 
 def package_retrieve(user_inp):
     '''
-    This is the main function
+    MAIN FUNCTION
     Package df based on user_input2 (Retrieval Type)
-    Sample input: package_retrieve(["tsla, amzn", "1", "Tpk_fff49e874d4a452b8a9c636ff96b06bc"])
+    Sample inputs:
+        package_retrieve([['tsla','amzn', 'goog', 'aapl'], '1'])
+        package_retrieve(take_user_input())
     '''
-    # Assign list of inputs to variables
+    user_inp.append(config('Test_Key_1'))
+    # Assign list of inputs to variables, and clean ticker input
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
     list_df = []
+    # Clean ticker input
     for i in (user_input):
         # Produce list of dataframes
         request_type = request_sort(user_input2)
@@ -138,5 +147,8 @@ def package_retrieve(user_inp):
 
 
 if __name__ == "__main__":
-    output = package_retrieve(take_user_input())
+    t1 = time.time()
+    # output = package_retrieve(take_user_input())
+    output = package_retrieve([['tsla'], '1'])
     print(output)
+    print('Task took %s seconds' % (time.time() - t1))
