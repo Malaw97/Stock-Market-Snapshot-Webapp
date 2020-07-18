@@ -120,12 +120,6 @@ def package_retrieve(user_inp):
         return list_df
 
 
-def graph():
-    '''
-    Return visual representation of a dataframe
-    '''
-
-
 if __name__ == "__main__":
     output = package_retrieve(take_user_input())
     # output = package_retrieve(
