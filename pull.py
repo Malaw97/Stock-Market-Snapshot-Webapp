@@ -1,6 +1,5 @@
 import requests
 import json
-import sys
 from bs4 import BeautifulSoup
 import pandas as pd
 from decouple import config
@@ -8,12 +7,15 @@ from decouple import config
 
 def take_user_input():
     '''
-    Take 2 inputs from user, verifying them. Extract api key from .env file
+    Take 2 inputs from user, cleaning and verifying them
+    Extract api key from .env file
     '''
     user_input = input(
         "What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n ")
+    user_input = parse_input(user_input)
     user_input2 = (
         input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
+    assert user_input2.isdigit(), "Invalid entry"
     # Retrieve api key from .env file
     api_key = config('Test_Key_1')
     # Place inputs into a list
@@ -29,11 +31,8 @@ def parse_input(tickers):
     tickers = tickers.split(',')
     for i in tickers:
         i = i.strip()
-        if len(i) != 4:
-            print('Invalid Ticker Length')
-            sys.exit()
-        else:
-            ticker_list.append(i)
+        assert len(i) == 4, 'Invalid Ticker Length'
+        ticker_list.append(i)
     return ticker_list
 
 
@@ -48,8 +47,7 @@ def request_sort(num):
     elif num == '3':
         return ''
     else:
-        print("Invalid Numeric Entry")
-        sys.exit()
+        assert False, "Invalid Numeric Entry"
 
 
 def retrieve(ticker, request1, key):
@@ -104,7 +102,7 @@ def package_retrieve(user_inp):
     # Assign list of inputs to variables
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
     list_df = []
-    for i in (parse_input(user_input)):
+    for i in (user_input):
         # Produce list of dataframes
         request_type = request_sort(user_input2)
         json_data = (retrieve(i, request_type, key))
