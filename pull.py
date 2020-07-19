@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 import time
+import asyncio
 from bs4 import BeautifulSoup
 import pandas as pd
 from decouple import config
@@ -62,19 +63,23 @@ def request_sort(num):
             raise
 
 
-def retrieve(ticker, request1, key):
+def retrieve(ticker, user_input2, key):
     '''
     Return dictionary interpretation of json data associated with a given ticker
     Raise assertion error if ticker is invalid
     '''
     # Connect to and process a url's html data
+    t1=time.time()
+    # Convert retrieval # to its corresponding retrieval string
+    request_type = request_sort(user_input2)
     url = requests.get(
         'https://sandbox.iexapis.com/stable/stock/' +
         ticker +
         '/' +
-        request1 +
+        request_type +
         '?token=' +
         key)
+    print(ticker + ' TOOK THIS LONG TO RETRIEVE: ',time.time()-t1) #    REMOVE THIS LATER
     soup = BeautifulSoup(url.text, 'lxml')
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
@@ -88,9 +93,11 @@ def retrieve(ticker, request1, key):
         raise
     # Transform into json data
     json_acceptable_string = url_data.replace("'", "\"")
-    # Turn into python object
+    # Turn into python object-dictionary
     json_data = json.loads(json_acceptable_string)
-    return json_data
+    # Convert to dataframe
+    df = format_data(user_input2, json_data)
+    return df
 
 
 def format_data(user_input2, json_data):
@@ -128,14 +135,11 @@ def package_retrieve(user_inp):
     user_inp.append(config('Test_Key_1'))
     # Assign list of inputs to variables, and clean ticker input
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
-    list_df = []
-    # Clean ticker input
+    #This will be the output list
+    list_df=[]
+    #For each ticker, add it's requested corresponding dataframe to a list
     for i in (user_input):
-        # Produce list of dataframes
-        request_type = request_sort(user_input2)
-        json_data = (retrieve(i, request_type, key))
-        data = format_data(user_input2, json_data)
-        list_df.append(data)
+        list_df.append(retrieve(i, user_input2, key))
     if user_input2 == '1':
         # Return list containing one dataframe
         list_df = pd.concat(list_df)
@@ -149,6 +153,6 @@ def package_retrieve(user_inp):
 if __name__ == "__main__":
     t1 = time.time()
     # output = package_retrieve(take_user_input())
-    output = package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
+    output = package_retrieve([['tsla'], '1'])
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
