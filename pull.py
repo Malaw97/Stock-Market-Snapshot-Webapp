@@ -68,8 +68,6 @@ def retrieve(ticker, user_input2, key):
     Return dictionary interpretation of json data associated with a given ticker
     Raise assertion error if ticker is invalid
     '''
-    # Connect to and process a url's html data
-    t1=time.time()
     # Convert retrieval # to its corresponding retrieval string
     request_type = request_sort(user_input2)
     url = requests.get(
@@ -79,7 +77,6 @@ def retrieve(ticker, user_input2, key):
         request_type +
         '?token=' +
         key)
-    print(ticker + ' TOOK THIS LONG TO RETRIEVE: ',time.time()-t1) #    REMOVE THIS LATER
     soup = BeautifulSoup(url.text, 'lxml')
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
@@ -153,7 +150,6 @@ def package_retrieve(user_inp):
 if __name__ == "__main__":
     t1 = time.time()
     # output = package_retrieve(take_user_input())
-    output = package_retrieve([['tsla'], '1'])
+    output = package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
-    
