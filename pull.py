@@ -6,6 +6,7 @@ import asyncio
 from bs4 import BeautifulSoup
 import pandas as pd
 from decouple import config
+from concurrent.futures import ThreadPoolExecutor
 logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
 
@@ -63,20 +64,16 @@ def request_sort(num):
             raise
 
 
-def retrieve(ticker, user_input2, key):
+async def get(ticker, user_input2, key):
     '''
-    Return dictionary interpretation of json data associated with a given ticker
+    Asynchronously retrieve url data
     Raise assertion error if ticker is invalid
     '''
+    executor = ThreadPoolExecutor(2)
+    loop = asyncio.get_event_loop()
     # Convert retrieval # to its corresponding retrieval string
     request_type = request_sort(user_input2)
-    url = requests.get(
-        'https://sandbox.iexapis.com/stable/stock/' +
-        ticker +
-        '/' +
-        request_type +
-        '?token=' +
-        key)
+    url = await loop.run_in_executor(executor, requests.get, 'https://sandbox.iexapis.com/stable/stock/' + ticker + '/' + request_type + '?token=' + key)
     soup = BeautifulSoup(url.text, 'lxml')
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
@@ -88,29 +85,36 @@ def retrieve(ticker, user_input2, key):
             'Function: retrieve\n           Error: Invalid Ticker Request\n           Ticker Requested=' +
             ticker)
         raise
+    return url_data
+
+
+def convert(url_data, user_input2, key):
+    '''
+    Return DataFrame interpretation of json data
+    '''
     # Transform into json data
     json_acceptable_string = url_data.replace("'", "\"")
     # Turn into python object-dictionary
     json_data = json.loads(json_acceptable_string)
-    # Convert to dataframe
+    # Convert to DataFrame
     df = format_data(user_input2, json_data)
     return df
 
 
 def format_data(user_input2, json_data):
     '''
-    Format json data into dataframes
+    Format json data into DataFrames
     '''
     #keys, values =list(data.keys()),list(data.values())
     #df=pd.DataFrame({'Keys': keys, 'Values': values})
     if user_input2 == "1":
-        # Convert singular dictionary into dataframe
+        # Convert singular dictionary into DataFrame
         # Return a list
         df = pd.DataFrame(json_data, index=[1])
         return df
     elif user_input2 == "2":
-        # Convert multiple dictionaries to dataframes, appending them to a list
-        # Return a list of dataframes
+        # Convert multiple dictionaries to DataFrames, appending them to a list
+        # Return a list of DataFrame
         list_df = []
         for i in json_data:
             df = pd.DataFrame(i, index=[0])
@@ -120,7 +124,7 @@ def format_data(user_input2, json_data):
         return df
 
 
-def package_retrieve(user_inp):
+async def package_retrieve(user_inp):
     '''
     MAIN FUNCTION
     Package df based on user_input2 (Retrieval Type)
@@ -132,24 +136,26 @@ def package_retrieve(user_inp):
     user_inp.append(config('Test_Key_1'))
     # Assign list of inputs to variables, and clean ticker input
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
-    #This will be the output list
+    # Output List of DataFrames
     list_df=[]
-    #For each ticker, add it's requested corresponding dataframe to a list
-    for i in (user_input):
-        list_df.append(retrieve(i, user_input2, key))
+    # Asynchronously retrieve url data
+    list_data = await asyncio.gather(*(get(i, user_input2, key) for i in user_input))
+    # For each ticker, add it's requested corresponding DataFrame to a list
+    for i in list_data:
+        list_df.append(convert(i, user_input2, key))
     if user_input2 == '1':
-        # Return list containing one dataframe
+        # Return list containing one DataFrame
         list_df = pd.concat(list_df)
         list_df.reset_index(drop=True, inplace=True)
         return list_df
     elif user_input2 == '2':
-        # Return the list of dataframes
+        # Return the list of DataFrame
         return list_df
 
 
 if __name__ == "__main__":
     t1 = time.time()
     # output = package_retrieve(take_user_input())
-    output = package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
+    output = asyncio.run(package_retrieve([['tsla', 'amzn', 'goog'], '2']))
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
