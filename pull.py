@@ -1,3 +1,14 @@
+from concurrent.futures import ThreadPoolExecutor
+from decouple import config
+import pandas as pd
+from bs4 import BeautifulSoup
+import asyncio
+import time
+import logging
+import json
+import requests
+
+
 def install_and_import(package):
     import importlib
     try:
@@ -8,20 +19,18 @@ def install_and_import(package):
     finally:
         globals()[package] = importlib.import_module(package)
 
-for i in ['requests', 'json', 'logging', 'time', 'bs4', 'pandas', 'concurrent.futures']:
+
+for i in [
+    'requests',
+    'json',
+    'logging',
+    'time',
+    'bs4',
+    'pandas',
+        'concurrent.futures']:
     install_and_import(i)
 
-import requests
-import json
-import logging
-import time
-import asyncio
-from bs4 import BeautifulSoup
-import pandas as pd
-from decouple import config
-from concurrent.futures import ThreadPoolExecutor
 logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
-
 
 
 def take_user_input():
@@ -111,16 +120,6 @@ def convert(url_data, user_input2, key):
     # Turn into python object-dictionary
     json_data = json.loads(json_acceptable_string)
     # Convert to DataFrame
-    df = format_data(user_input2, json_data)
-    return df
-
-
-def format_data(user_input2, json_data):
-    '''
-    Format json data into DataFrames
-    '''
-    #keys, values =list(data.keys()),list(data.values())
-    #df=pd.DataFrame({'Keys': keys, 'Values': values})
     if user_input2 == "1":
         # Convert singular dictionary into DataFrame
         # Return a list
@@ -151,7 +150,7 @@ async def package_retrieve(user_inp):
     # Assign list of inputs to variables, and clean ticker input
     user_input, user_input2, key = user_inp[0], user_inp[1], user_inp[2]
     # Output List of DataFrames
-    list_df=[]
+    list_df = []
     # Asynchronously retrieve url data
     list_data = await asyncio.gather(*(get(i, user_input2, key) for i in user_input))
     # For each ticker, add it's requested corresponding DataFrame to a list
