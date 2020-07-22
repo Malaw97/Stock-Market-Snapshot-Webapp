@@ -1,14 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
-from decouple import config
-import pandas as pd
-from bs4 import BeautifulSoup
-import asyncio
-import time
-import logging
-import json
-import requests
-
-
 def install_and_import(package):
     import importlib
     try:
@@ -29,6 +18,16 @@ for i in [
     'pandas',
         'concurrent.futures']:
     install_and_import(i)
+
+from concurrent.futures import ThreadPoolExecutor
+from decouple import config
+import pandas as pd
+from bs4 import BeautifulSoup
+import asyncio
+import time
+import logging
+import json
+import requests
 
 logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
