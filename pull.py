@@ -1,3 +1,16 @@
+def install_and_import(package):
+    import importlib
+    try:
+        importlib.import_module(package)
+    except ImportError:
+        import pip
+        pip.main(['install', package])
+    finally:
+        globals()[package] = importlib.import_module(package)
+
+for i in ['requests', 'json', 'logging', 'time', 'bs4', 'pandas', 'concurrent.futures']:
+    install_and_import(i)
+
 import requests
 import json
 import logging
@@ -8,6 +21,7 @@ import pandas as pd
 from decouple import config
 from concurrent.futures import ThreadPoolExecutor
 logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
+
 
 
 def take_user_input():
@@ -155,7 +169,7 @@ async def package_retrieve(user_inp):
 
 if __name__ == "__main__":
     t1 = time.time()
-    # output = package_retrieve(take_user_input())
+    # output = asyncio.run(package_retrieve(take_user_input()))
     output = asyncio.run(package_retrieve([['tsla', 'amzn', 'goog'], '2']))
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
