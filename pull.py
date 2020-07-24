@@ -91,6 +91,7 @@ async def get(ticker, user_input2, key):
     Asynchronously retrieve url data
     Raise assertion error if ticker is invalid
     '''
+    time.sleep(0.1)
     executor = ThreadPoolExecutor(2)
     loop = asyncio.get_event_loop()
     # Convert retrieval # to its corresponding retrieval string
@@ -107,7 +108,7 @@ async def get(ticker, user_input2, key):
             'Function: retrieve\n           Error: Invalid Ticker Request\n           Ticker Requested=' +
             ticker)
         raise
-    return url_data
+    return ticker, url_data
 
 
 def convert(url_data, user_input2, key):
@@ -135,6 +136,17 @@ def convert(url_data, user_input2, key):
         df.reset_index(drop=True, inplace=True)
         return df
 
+def async_fix(user_input, list_data):
+    '''
+    Fixes async retrievals resulting in out of order url_data
+    '''
+    dictionary={}
+    list_df=[]
+    for i in list_data:
+        dictionary[i[0]]=[i[1]]
+    for i in user_input:
+        list_df.append(dictionary[i][0])
+    return(list_df)
 
 async def package_retrieve(user_inp):
     '''
@@ -152,6 +164,8 @@ async def package_retrieve(user_inp):
     list_df = []
     # Asynchronously retrieve url data
     list_data = await asyncio.gather(*(get(i, user_input2, key) for i in user_input))
+    #Fix any possible async ordering issues
+    list_data = async_fix(user_input, list_data)
     # For each ticker, add it's requested corresponding DataFrame to a list
     for i in list_data:
         list_df.append(convert(i, user_input2, key))
@@ -168,6 +182,6 @@ async def package_retrieve(user_inp):
 if __name__ == "__main__":
     t1 = time.time()
     # output = asyncio.run(package_retrieve(take_user_input()))
-    output = asyncio.run(package_retrieve([['tsla', 'amzn', 'goog'], '2']))
+    output = asyncio.run(package_retrieve([['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy'], '2']))
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
