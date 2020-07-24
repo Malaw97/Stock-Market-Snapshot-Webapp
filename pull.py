@@ -143,8 +143,10 @@ def async_fix(user_input, list_data):
     '''
     dictionary = {}
     list_df = []
+    # Index url_data into a dictionary with corresponding ticker as its key
     for i in list_data:
         dictionary[i[0]] = [i[1]]
+    # Insert url_data into list in order of user_input
     for i in user_input:
         list_df.append(dictionary[i][0])
     return(list_df)
@@ -181,10 +183,13 @@ async def package_retrieve(user_inp):
         return list_df
 
 
-if __name__ == "__main__":
+def main():
     t1 = time.time()
     # output = asyncio.run(package_retrieve(take_user_input()))
     output = asyncio.run(package_retrieve(
         [['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy'], '2']))
     print(output)
     print('Task took %s seconds' % (time.time() - t1))
+
+if __name__ == "__main__":
+    main()
