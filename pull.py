@@ -188,7 +188,7 @@ def main():
     # output = asyncio.run(package_retrieve(take_user_input()))
     output = asyncio.run(package_retrieve(
         [['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy'], '2']))
-    print(output)
+    return output
     print('Task took %s seconds' % (time.time() - t1))
 
 if __name__ == "__main__":
