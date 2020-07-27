@@ -1,24 +1,3 @@
-def install_and_import(package):
-    import importlib
-    try:
-        importlib.import_module(package)
-    except ImportError:
-        import pip
-        pip.main(['install', package])
-    finally:
-        globals()[package] = importlib.import_module(package)
-
-
-for i in [
-    'requests',
-    'json',
-    'logging',
-    'time',
-    'bs4',
-    'pandas',
-        'concurrent.futures']:
-    install_and_import(i)
-
 import requests
 import json
 import logging
@@ -30,40 +9,6 @@ from decouple import config
 from concurrent.futures import ThreadPoolExecutor
 
 logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
-
-
-def take_user_input():
-    '''
-    FOR TESTING PURPOSES
-
-    Take 2 inputs from user, cleaning and verifying retrieval type validity
-    Raise assertion error if retrieval type is invalid
-    Extract api key from .env file
-    '''
-    user_input = input(
-        "What ticker(s) would you like to explore? (If entering more than one, separate each ticker by a comma)\n")
-    # Clean Ticker Input
-    user_input = parse_input(user_input)
-    user_input2 = (
-        input("Retrieval Type?\n 1 => Quote\n 2 => Intraday-Prices\n")).strip()
-    # Place inputs into a list
-    user_inp = [user_input, user_input2]
-    return user_inp
-
-
-def parse_input(tickers):
-    '''
-    FOR TESTING PURPOSES
-
-    Validates take_user_input()
-    Clean input, returning a readable list
-    '''
-    ticker_list = []
-    tickers = tickers.split(',')
-    for i in tickers:
-        i = i.strip()
-        ticker_list.append(i)
-    return ticker_list
 
 
 def request_sort(num):
@@ -185,11 +130,11 @@ async def package_retrieve(user_inp):
 
 def main():
     t1 = time.time()
-    # output = asyncio.run(package_retrieve(take_user_input()))
     output = asyncio.run(package_retrieve(
         [['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy'], '2']))
-    return output
     print('Task took %s seconds' % (time.time() - t1))
+    return output
+
 
 if __name__ == "__main__":
     main()
