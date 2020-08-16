@@ -9,28 +9,6 @@ import json
 import requests
 
 
-def install_and_import(package):
-    import importlib
-    try:
-        importlib.import_module(package)
-    except ImportError:
-        import pip
-        pip.main(['install', package])
-    finally:
-        globals()[package] = importlib.import_module(package)
-
-
-for i in [
-    'requests',
-    'json',
-    'logging',
-    'time',
-    'bs4',
-    'pandas',
-        'concurrent.futures']:
-    install_and_import(i)
-
-
 logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
 
@@ -135,7 +113,6 @@ async def package_retrieve(user_inp):
     # Output List of DataFrames
     list_df = []
     # Asynchronously retrieve url data
-    print(*(get(i, user_input2, key) for i in user_input))
     list_data = await asyncio.gather(*(get(i, user_input2, key) for i in user_input))
     # Fix any possible async ordering issues
     list_data = async_fix(user_input, list_data)
