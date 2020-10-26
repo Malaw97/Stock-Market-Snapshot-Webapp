@@ -135,13 +135,8 @@ def main(list_tickers):
     '''
     t1 = time.time()
     output = asyncio.run(package_retrieve(
-<<<<<<< HEAD:pull_iex.py
         [list_tickers, '2']))
     #print('Task took %s seconds' % (time.time() - t1))
-=======
-        [['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy'], '2']))
-    print('Task took %s seconds' % (time.time() - t1))
->>>>>>> 32a4e502aa6039b4682afb6cb872b656357e2d71:api/retrieve/pull.py
     return output
 
 
