@@ -1,0 +1,5 @@
+def color_avg(hexcode): 
+    hexcode = hexcode.lstrip('#')
+    lv = len(hexcode)
+    return tuple(int(hexcode[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+print (color_avg('#ffffff'))
