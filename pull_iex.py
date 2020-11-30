@@ -14,7 +14,8 @@ logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
 def request_sort(num):
     '''
-    Map numbers to retrieval types. Used to access proper url
+    Map numbers to retrieval types
+    Used to access a given url
     '''
     if num == '1':
         return 'quote'
@@ -102,9 +103,10 @@ async def package_retrieve(user_inp):
     '''
     MAIN FUNCTION
     Package df based on user_input2 (Retrieval Type)
-    Sample inputs:
-    FOR TESTING: package_retrieve(take_user_input())
-    PRODUCTION: package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
+
+    Sample input:
+        DEV: package_retrieve(take_user_input())
+        PROD: package_retrieve([['tsla', 'amzn', 'goog', 'aapl'], '2'])
     '''
     # Retrieve api key from .env file
     user_inp.append(config('Test_Key_1'))
@@ -131,9 +133,10 @@ async def package_retrieve(user_inp):
 
 def main(list_tickers):
     '''
+    Sample input:
     ['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy']
     '''
-    t1 = time.time()
+    #t1 = time.time()
     output = asyncio.run(package_retrieve(
         [list_tickers, '2']))
     #print('Task took %s seconds' % (time.time() - t1))
