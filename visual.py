@@ -38,6 +38,9 @@ def choose(list_tickers, source):
 
 
 def visual_pipeline(list_tickers, source):
+    '''
+    Requires documentation
+    '''
     data = choose(list_tickers, source)
     fig, ax = plt.subplots()
     data_labels = data[0]
@@ -52,11 +55,13 @@ def visual_pipeline(list_tickers, source):
 
 
 def main():
+    '''
+    Requires documentation
+    '''
     t1 = time.time()
-
     #visual_pipeline(['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy'], ['iex', 'iex', 'iex', '44', 'iex', 'iex', 'iex', 'iex', 'iex', 'iex'])
-    visual_pipeline(['tsla', 'twtr', 'spy'], ['iex', 'iex', 'iex'])
-
+    visual_pipeline(['tsla', 'twtr', 'spy', 'pltr'],
+                    ['iex', 'iex', 'iex', 'iex'])
     print('Task took %s seconds' % (time.time() - t1))
 
 

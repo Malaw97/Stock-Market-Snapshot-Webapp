@@ -141,7 +141,3 @@ def main(list_tickers):
         [list_tickers, '2']))
     #print('Task took %s seconds' % (time.time() - t1))
     return output
-
-
-if __name__ == "__main__":
-    main()
