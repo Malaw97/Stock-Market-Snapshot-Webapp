@@ -4,12 +4,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import asyncio
 import time
-import logging
 import json
 import requests
-
-
-logging.basicConfig(filename='Pull_Errors.log', level=logging.DEBUG)
 
 
 def request_sort(num):
@@ -23,14 +19,6 @@ def request_sort(num):
         return 'intraday-prices'
     elif num == '3':
         return ''
-    else:
-        try:
-            assert False, "Invalid Retrieval Type"
-        except AssertionError as error:
-            logging.error(
-                'Function: request_sort\n           Error: Invalid Retrieval Request\n           Retrieval Type requested=' +
-                num)
-            raise
 
 
 async def get(ticker, user_input2, key):
@@ -43,18 +31,11 @@ async def get(ticker, user_input2, key):
     loop = asyncio.get_event_loop()
     # Convert retrieval # to its corresponding retrieval string
     request_type = request_sort(user_input2)
-    url = await loop.run_in_executor(executor, requests.get, 'https://sandbox.iexapis.com/stable/stock/' + ticker + '/' + request_type + '?token=' + key)
+    url = await loop.run_in_executor(executor, requests.get, 'https://cloud.iexapis.com/stable/stock/' + ticker + '/' + request_type + '?token=' + key)
     soup = BeautifulSoup(url.text, 'lxml')
     # Locate chosen string within HTML
     url_data = (soup.find('body', {'style': ''})).text
     # Check validity of ticker
-    try:
-        assert url_data != 'Unknown symbol', 'Invalid Ticker Request'
-    except AssertionError as error:
-        logging.error(
-            'Function: retrieve\n           Error: Invalid Ticker Request\n           Ticker Requested=' +
-            ticker)
-        raise
     return ticker, url_data
 
 
@@ -131,13 +112,20 @@ async def package_retrieve(user_inp):
         return list_df
 
 
-def main(list_tickers):
+def main(list_tickers, req_type):
     '''
     Sample input:
     ['airi', 'amd', 'ba', 'bmo', 'bns', 'nclh', 'pgm', 'ry', 'wmt', 'spy']
     '''
     #t1 = time.time()
     output = asyncio.run(package_retrieve(
-        [list_tickers, '2']))
+        [list_tickers, req_type]))
     #print('Task took %s seconds' % (time.time() - t1))
     return output
+
+
+'''
+pd.set_option('display.max_columns', None)
+print(main(['airi', 'amd', 'ba', 'bmo', 'bns',
+            'nclh', 'pgm', 'ry', 'wmt', 'spy'], '2'))
+'''
